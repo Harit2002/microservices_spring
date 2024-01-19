@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: currency-exchange
+    
+  datasource:
+    url: jdbc:h2:mem:testdb
+    
+  jpa:
+    show-sql: true
+    defer-datasource-initialization: true
+    
+  h2:
+    console:
+      enabled: true
+      
+  cloud:
+    config:
+      enabled: false
+      
+server:
+  port: 8000
+  
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+      
+      
+resilience4j:
+  bulkhead:
+    instances:
+      sample-api:
+        max-concurrent-calls: 10
+  ratelimiter:
+    instances:
+      default:
+        limit-for-period: 2
+        limit-refresh-period: 10s
+  retry:
+    instances: 
+      sample-api:
+       max-attempts: 5
+       waitDuration: 1s
+       enableExponentialBackoff: true
+ 
+
+management:
+  tracing:
+    sampling:
+      probability: 0.5
+logging:
+  pattern: 
+    level: 5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}] 
